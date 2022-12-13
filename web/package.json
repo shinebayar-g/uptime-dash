@@ -7,7 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "buf:generate": "buf generate --path proto"
+        "buf:generate": "rm -rf proto/gen && buf generate --path proto"
     },
     "devDependencies": {
         "@bufbuild/protoc-gen-connect-web": "^0.3.3",

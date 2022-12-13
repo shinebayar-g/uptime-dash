@@ -1,11 +1,19 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import { createConnectTransport, createPromiseClient } from '@bufbuild/connect-web'
+import { UptimeService } from '../proto/gen/proto/uptime_connectweb'
+
+const transport = createConnectTransport({
+    baseUrl: "http://localhost:8080",
+})
+
+const client = createPromiseClient(UptimeService, transport)
 
 export default function Home() {
     return (
         <div>
             <main className={styles.main}>
-
+                <h1>Hello World!</h1>
             </main>
 
             <footer className={styles.footer}>
