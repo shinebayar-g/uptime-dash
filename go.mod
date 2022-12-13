@@ -9,6 +9,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v5 v5.2.0
+	github.com/rs/cors v1.8.2
 	github.com/rs/zerolog v1.28.0
 	golang.org/x/net v0.3.0
 	google.golang.org/protobuf v1.28.1
