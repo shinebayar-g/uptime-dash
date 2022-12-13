@@ -1,0 +1,66 @@
+version: '3'
+services:
+  uptime-dash-server:
+    hostname: uptime-dash-server
+    container_name: uptime-dash-server
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    environment:
+      PORT: 8080
+      LOG_LEVEL: debug
+      DB_HOST: timescaledb
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: timescaledb123
+      DB_NAME: uptime_dash
+    networks:
+      - uptime-dash
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - .:/app
+
+  timescaledb:
+    hostname: timescaledb
+    container_name: timescaledb
+    image: timescale/timescaledb-ha:pg14.6-ts2.8.1-latest
+    environment:
+      POSTGRES_PASSWORD: timescaledb123
+      POSTGRES_DB: uptime_dash
+      TIMESCALEDB_TELEMETRY: 'off'
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - uptime-dash
+    volumes:
+      - timescaledb-data:/home/postgres/pgdata/data
+    restart: unless-stopped
+
+  pgadmin:
+    hostname: pgadmin
+    container_name: pgadmin
+    image: dpage/pgadmin4:6.16
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@uptime.github
+      PGADMIN_DEFAULT_PASSWORD: uptime123
+      PGADMIN_DISABLE_POSTFIX: 1
+      PGADMIN_LISTEN_PORT: 8081
+    ports:
+      - "127.0.0.1:8081:8081"
+    networks:
+      - uptime-dash
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+
+volumes:
+  timescaledb-data:
+  pgadmin-data:
+
+
+networks:
+  uptime-dash:
+    driver: bridge

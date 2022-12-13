@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package uptime_dash.v1;
+
+option go_package = "main/gen/uptime_dash/v1;uptime_dash_v1";
+
+service UptimeService {
+    rpc GetAllTargets (GetAllTargetsRequest) returns (GetAllTargetsResponse) {};
+    rpc GetTarget(GetTargetRequest) returns (GetTargetResponse) {};
+    rpc CreateTarget (CreateTargetRequest) returns (CreateTargetResponse) {};
+    rpc UpdateTarget (UpdateTargetRequest) returns (UpdateTargetResponse) {};
+    rpc DeleteTarget (DeleteTargetRequest) returns (DeleteTargetResponse) {};
+}
+
+message Target {
+    string id = 1;
+    string name = 2;
+    Type type = 3;
+    uint32 interval_seconds = 4;
+    uint32 timeout_seconds = 5;
+    optional string url = 6;
+    optional string hostname = 7;
+    optional uint32 port = 8;
+
+    enum Type {
+        TYPE_UNSPECIFIED = 0;
+        TYPE_HTTP = 1;
+        TYPE_TCP = 2;
+        TYPE_PING = 3;
+    }
+}
+
+message GetAllTargetsRequest {}
+message GetAllTargetsResponse {
+    repeated Target targets = 1;
+}
+
+message GetTargetRequest {
+    string id = 1;
+}
+message GetTargetResponse {
+    Target target = 1;
+}
+
+message CreateTargetRequest {
+    Target target = 1;
+}
+message CreateTargetResponse {
+    Target target = 1;
+}
+
+message UpdateTargetRequest {
+    Target target = 1;
+}
+message UpdateTargetResponse {
+    Target target = 1;
+}
+
+message DeleteTargetRequest {
+    string id = 1;
+}
+message DeleteTargetResponse {}
