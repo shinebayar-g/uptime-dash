@@ -1,7 +1,10 @@
+'use client';
+import { useState, useEffect } from 'react'
+import { createConnectTransport, createPromiseClient } from '@bufbuild/connect-web'
+
 import Image from 'next/image'
 import styles from './page.module.css'
-import { createConnectTransport, createPromiseClient } from '@bufbuild/connect-web'
-import { UptimeService } from '../proto/gen/proto/uptime_connectweb'
+import { UptimeService } from '../gen/uptime_connectweb'
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -10,10 +13,28 @@ const transport = createConnectTransport({
 const client = createPromiseClient(UptimeService, transport)
 
 export default function Home() {
+    const [data, setData] = useState(null)
+    const [isLoading, setLoading] = useState(false)
+
+    useEffect(() => {
+        setLoading(true)
+        client.getAllTargets({})
+            .then((res) => res.toJSON())
+            .then((data: any) => {
+                setData(data)
+                setLoading(false)
+            })
+    }, [])
+
+    if (isLoading) return <p>Loading...</p>
+    if (!data) return <p>No profile data</p>
+
     return (
         <div>
             <main className={styles.main}>
-                <h1>Hello World!</h1>
+                <div>targets:
+                    {JSON.stringify(data)}
+                </div>
             </main>
 
             <footer className={styles.footer}>
