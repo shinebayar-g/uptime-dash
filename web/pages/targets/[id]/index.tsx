@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import NextLink from 'next/link';
-import { Box, Grid, GridItem, Link, VStack } from '@chakra-ui/react';
 import { createConnectTransport, createPromiseClient } from '@bufbuild/connect-web';
-import { UptimeService } from '../gen/uptime_connectweb';
-import { Target } from '../gen/uptime_pb';
+import { Box, Grid, GridItem, Link, VStack } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
+import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
+import { UptimeService } from '../../../gen/uptime_connectweb';
+import { Target } from '../../../gen/uptime_pb';
 
 const transport = createConnectTransport({
     baseUrl: 'http://localhost:8080',
@@ -11,7 +12,19 @@ const transport = createConnectTransport({
 
 const client = createPromiseClient(UptimeService, transport);
 
-export default function Main() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    // @ts-ignore
+    const res = await client.getTarget({ id: context.params.id });
+
+    return {
+        props: {
+            target: res.target?.toJson(),
+        },
+    };
+};
+
+export default function TargetDetail({ target }: { target: Target }) {
+    console.log(target);
     const [data, setData] = useState<Target[]>([]);
 
     useEffect(() => {
@@ -44,9 +57,14 @@ export default function Main() {
                 </VStack>
             </GridItem>
             <GridItem pl='2' bg='green.300' area={'main'}>
-                <Box>Total targets: {data.length}</Box>
-                <Box>Up: {data.length}</Box>
-                <Box>Down: {data.length}</Box>
+                <Box>ID: {target.id}</Box>
+                <Box>Name: {target.name}</Box>
+                <Box>Type: {target.type}</Box>
+                <Box>Interval Seconds: {target.intervalSeconds}</Box>
+                <Box>Timeout Seconds: {target.timeoutSeconds}</Box>
+                <Box>Url: {target.url}</Box>
+                <Box>Hostname: {target.hostname}</Box>
+                <Box>Port: {target.port}</Box>
             </GridItem>
             <GridItem pl='2' bg='blue.300' area={'footer'}>
                 Footer

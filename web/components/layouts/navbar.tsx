@@ -1,4 +1,5 @@
-import { HStack, Button, Grid, GridItem } from '@chakra-ui/react';
+import { HStack, Button, Grid, GridItem, Link } from '@chakra-ui/react';
+import NextLink from 'next/link';
 
 export default function Navbar() {
     return (
@@ -9,7 +10,9 @@ export default function Navbar() {
             alignItems={'center'}
         >
             <GridItem area={'left'} ml={1}>
-                <Button variant='ghost'>Dashboard</Button>
+                <Link as={NextLink} href={`/`} style={{ textDecoration: 'none' }}>
+                    <Button variant='ghost'>Dashboard</Button>
+                </Link>
             </GridItem>
             <GridItem area={'right'}>
                 <HStack spacing={1} justifyContent='right' mr={1}>
