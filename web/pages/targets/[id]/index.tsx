@@ -1,10 +1,10 @@
-import { createConnectTransport, createPromiseClient } from '@bufbuild/connect-web';
+import { createConnectTransport, createPromiseClient, ConnectError } from '@bufbuild/connect-web';
 import { Box, Grid, GridItem, Link, VStack } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 import { UptimeService } from '../../../gen/uptime_connectweb';
-import { Target } from '../../../gen/uptime_pb';
+import { GetTargetResponse, Target } from '../../../gen/uptime_pb';
 
 const transport = createConnectTransport({
     baseUrl: 'http://localhost:8080',
@@ -13,18 +13,31 @@ const transport = createConnectTransport({
 const client = createPromiseClient(UptimeService, transport);
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    // @ts-ignore
-    const res = await client.getTarget({ id: context.params.id });
-
+    let res: GetTargetResponse | undefined;
+    try {
+        // @ts-ignore
+        res = await client.getTarget({ id: context.params.id });
+    } catch (err) {
+        if (err instanceof ConnectError) {
+            if (err.code === 5) {
+                return {
+                    notFound: true,
+                };
+            } else {
+                console.log('unknown connect error,', err);
+            }
+        } else {
+            console.error('unknown error.', err);
+        }
+    }
     return {
         props: {
-            target: res.target?.toJson(),
+            target: res?.target?.toJson(),
         },
     };
 };
 
 export default function TargetDetail({ target }: { target: Target }) {
-    console.log(target);
     const [data, setData] = useState<Target[]>([]);
 
     useEffect(() => {

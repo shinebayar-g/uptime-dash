@@ -17,9 +17,10 @@ services:
     networks:
       - uptime-dash
     ports:
-      - "127.0.0.1:8080:8080"
+      - '127.0.0.1:8080:8080'
     volumes:
       - .:/app
+    restart: unless-stopped
 
   timescaledb:
     hostname: timescaledb
@@ -30,7 +31,7 @@ services:
       POSTGRES_DB: uptime_dash
       TIMESCALEDB_TELEMETRY: 'off'
     ports:
-      - "127.0.0.1:5432:5432"
+      - '127.0.0.1:5432:5432'
     networks:
       - uptime-dash
     volumes:
@@ -47,7 +48,7 @@ services:
       PGADMIN_DISABLE_POSTFIX: 1
       PGADMIN_LISTEN_PORT: 8081
     ports:
-      - "127.0.0.1:8081:8081"
+      - '127.0.0.1:8081:8081'
     networks:
       - uptime-dash
     volumes:
