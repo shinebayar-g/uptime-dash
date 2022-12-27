@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"main/client"
 	"main/database"
+	"main/ent"
 	"main/ent/target"
 	uptime_dash_v1 "main/gen/uptime_dash/v1"
 	"main/scheduler"
@@ -45,6 +46,7 @@ func (s UptimeServer) GetAllTargets(ctx context.Context, req *connect.Request[up
 func (s UptimeServer) GetTarget(ctx context.Context, req *connect.Request[uptime_dash_v1.GetTargetRequest]) (*connect.Response[uptime_dash_v1.GetTargetResponse], error) {
 	idString, err := uuid.Parse(req.Msg.Id)
 	if err != nil {
+		log.Error().Err(err).Msg("uuid parse error.")
 		return nil, err
 	}
 	t, err := database.Client.Target.
@@ -52,7 +54,13 @@ func (s UptimeServer) GetTarget(ctx context.Context, req *connect.Request[uptime
 		Where(target.ID(idString)).
 		Only(ctx)
 	if err != nil {
-		return nil, err
+		log.Error().Err(err).Msg("query error.")
+		switch {
+		case ent.IsNotFound(err):
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		default:
+			return nil, err
+		}
 	}
 
 	res := connect.NewResponse(&uptime_dash_v1.GetTargetResponse{
