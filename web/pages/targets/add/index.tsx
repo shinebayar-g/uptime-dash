@@ -49,7 +49,7 @@ export default function AddTarget() {
         switch (param) {
             case Target_Type.HTTP:
                 return (
-                    <>
+                    <FormControl>
                         <FormLabel>URL</FormLabel>
                         <Input
                             placeholder='https://www.google.com'
@@ -57,38 +57,45 @@ export default function AddTarget() {
                             value={url}
                             onChange={(e) => setUrl(e.currentTarget.value)}
                         ></Input>
-                    </>
+                    </FormControl>
                 );
             case Target_Type.TCP:
                 return (
                     <>
-                        <FormLabel>Hostname / IP address</FormLabel>
-                        <Input
-                            placeholder='ec2-12-34-56-78.us-west-2.compute.amazonaws.com'
-                            value={hostname}
-                            onChange={(e) => setHostname(e.currentTarget.value)}
-                        ></Input>
-
-                        <FormLabel>Port</FormLabel>
-                        <NumberInput min={1} max={65535} onChange={(val) => setPort(parseInt(val))}>
-                            <NumberInputField placeholder={'8080'} />
-                            <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                            </NumberInputStepper>
-                        </NumberInput>
+                        <FormControl>
+                            <FormLabel>Hostname / IP address</FormLabel>
+                            <Input
+                                placeholder='ec2-12-34-56-78.us-west-2.compute.amazonaws.com'
+                                value={hostname}
+                                onChange={(e) => setHostname(e.currentTarget.value)}
+                            ></Input>
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Port</FormLabel>
+                            <NumberInput
+                                min={1}
+                                max={65535}
+                                onChange={(val) => setPort(parseInt(val))}
+                            >
+                                <NumberInputField placeholder={'8080'} />
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                </NumberInputStepper>
+                            </NumberInput>
+                        </FormControl>
                     </>
                 );
             case Target_Type.PING:
                 return (
-                    <>
+                    <FormControl>
                         <FormLabel>Hostname / IP address</FormLabel>
                         <Input
                             placeholder='ec2-12-34-56-78.us-west-2.compute.amazonaws.com'
                             value={hostname}
                             onChange={(e) => setHostname(e.currentTarget.value)}
                         ></Input>
-                    </>
+                    </FormControl>
                 );
         }
     };
@@ -104,12 +111,14 @@ export default function AddTarget() {
             port,
         });
 
-        try {
-            const res = await client.createTarget({ target: t });
-            console.log(res);
-        } catch (err) {
-            console.error("couldn't create a new target.", err);
-        }
+        console.log('creating new target:', t);
+
+        // try {
+        //     const res = await client.createTarget({ target: t });
+        //     console.log(res);
+        // } catch (err) {
+        //     console.error("couldn't create a new target.", err);
+        // }
     };
 
     useEffect(() => {
@@ -142,15 +151,16 @@ export default function AddTarget() {
                 </VStack>
             </GridItem>
             <GridItem pl='2' area={'main'}>
-                <FormControl>
-                    <VStack alignItems={'left'}>
+                <VStack alignItems={'left'}>
+                    <FormControl>
                         <FormLabel>Name</FormLabel>
                         <Input
-                            type='email'
+                            type='text'
                             value={name}
                             onChange={(e) => setName(e.currentTarget.value)}
                         ></Input>
-
+                    </FormControl>
+                    <FormControl>
                         <FormLabel>Type</FormLabel>
                         <Select
                             placeholder='Select target type'
@@ -165,9 +175,11 @@ export default function AddTarget() {
                                 return <option key={t}>{t}</option>;
                             })}
                         </Select>
+                    </FormControl>
 
-                        {targetType && (
-                            <>
+                    {targetType && (
+                        <>
+                            <FormControl>
                                 <FormLabel>Interval Seconds</FormLabel>
                                 <NumberInput
                                     min={15}
@@ -180,7 +192,8 @@ export default function AddTarget() {
                                         <NumberDecrementStepper />
                                     </NumberInputStepper>
                                 </NumberInput>
-
+                            </FormControl>
+                            <FormControl>
                                 <FormLabel>Timeout Seconds</FormLabel>
                                 <NumberInput
                                     min={1}
@@ -194,14 +207,14 @@ export default function AddTarget() {
                                         <NumberDecrementStepper />
                                     </NumberInputStepper>
                                 </NumberInput>
-                            </>
-                        )}
+                            </FormControl>
+                        </>
+                    )}
 
-                        {targetType && renderSwitch(targetType)}
+                    {targetType && renderSwitch(targetType)}
 
-                        <Button onClick={addTarget}>Add</Button>
-                    </VStack>
-                </FormControl>
+                    <Button onClick={addTarget}>Add</Button>
+                </VStack>
             </GridItem>
             <GridItem pl='2' bg='blue.300' area={'footer'}>
                 Footer
